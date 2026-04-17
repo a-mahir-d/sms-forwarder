@@ -1,0 +1,87 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:models="clr-namespace:sms_forwarder.Models"
+             x:Class="sms_forwarder.MainPage"
+             NavigationPage.HasNavigationBar="False"
+             BackgroundColor="#121212"
+             Padding="10, 0, 10, 0">
+			 
+	<ScrollView x:DataType="models:AppSettings">
+		<VerticalStackLayout Padding="20" Spacing="20">
+
+			<Grid ColumnDefinitions="*, *" ColumnSpacing="15">
+				<Border Grid.Column="0" Padding="15" StrokeShape="RoundRectangle 10" BackgroundColor="#1E1E1E">
+					<Border.GestureRecognizers>
+						<TapGestureRecognizer Tapped="OnDayOfPackageRenewalTapped" />
+					</Border.GestureRecognizers>
+					<VerticalStackLayout HorizontalOptions="Center">
+						<Label Text="Paket Günü" FontSize="12" TextColor="#B0B0B0" HorizontalOptions="Center"/>
+						<Label x:Name="LblPackageDay" Text="{Binding DayOfPackageRenewal}" FontSize="24" FontAttributes="Bold" TextColor="White" HorizontalOptions="Center"/>
+					</VerticalStackLayout>
+				</Border>
+
+				<Border Grid.Column="1" Padding="15" StrokeShape="RoundRectangle 10" BackgroundColor="#1E1E1E">
+					<Border.GestureRecognizers>
+						<TapGestureRecognizer Tapped="OnSmsLimitTapped" />
+					</Border.GestureRecognizers>
+					<VerticalStackLayout HorizontalOptions="Center">
+						<Label Text="SMS Limiti" FontSize="12" TextColor="#B0B0B0" HorizontalOptions="Center"/>
+						<Label x:Name="LblSmsLimit" Text="{Binding SmsLimitPerMonth}" FontSize="24" FontAttributes="Bold" TextColor="White" HorizontalOptions="Center"/>
+					</VerticalStackLayout>
+				</Border>
+			</Grid>
+			
+			<Border Padding="15" StrokeShape="RoundRectangle 10" BackgroundColor="#0D47A1">
+				<Border.GestureRecognizers>
+					<TapGestureRecognizer Tapped="OnActiveReceiverTapped" />
+				</Border.GestureRecognizers>
+    
+				<HorizontalStackLayout Spacing="15" VerticalOptions="Center">
+					<Border WidthRequest="40" HeightRequest="40" StrokeShape="RoundRectangle 20" BackgroundColor="#1976D2">
+						<Label Text="{Binding ActiveReceiver}" 
+						       TextColor="White" 
+						       FontAttributes="Bold" 
+						       HorizontalOptions="Center" 
+						       VerticalOptions="Center" />
+					</Border>
+
+					<VerticalStackLayout VerticalOptions="Center">
+						<Label Text="Aktif Yönlendirme Alıcısı" FontSize="12" TextColor="#BBDEFB" />
+						<Label x:Name="LblActiveNumber" 
+						       Text="{Binding ActivePhoneNumber}" 
+						       FontSize="18" 
+						       TextColor="White"
+						       FontAttributes="Bold" />
+					</VerticalStackLayout>
+				</HorizontalStackLayout>
+			</Border>
+			
+			<Grid ColumnDefinitions="*, Auto" Margin="0, 10, 0, 0">
+				<Label Grid.Column="0" Text="Beyaz Liste" FontSize="20" FontAttributes="Bold" TextColor="White" VerticalOptions="Center"/>
+				<Button Grid.Column="1" Text="+" FontSize="24" WidthRequest="50" HeightRequest="50" CornerRadius="25" BackgroundColor="#2196F3" TextColor="White" Clicked="OnAddWhitelistClicked" />
+			</Grid>
+
+			<CollectionView ItemsSource="{Binding WhiteList}" 
+			                Margin="0,0,0,20">
+				<CollectionView.EmptyView>
+					<Label Text="Liste henüz boş." TextColor="Gray" HorizontalOptions="Center" Margin="20"/>
+				</CollectionView.EmptyView>
+				<CollectionView.ItemTemplate>
+					<DataTemplate x:DataType="x:String">
+						<Border Padding="15" Margin="0,5" StrokeShape="RoundRectangle 10" BackgroundColor="#252525">
+							<Border.GestureRecognizers>
+								<TapGestureRecognizer Tapped="OnWhitelistItemTapped" CommandParameter="{Binding .}" />
+							</Border.GestureRecognizers>
+							<HorizontalStackLayout>
+								<Label Text="{Binding .}" FontSize="16" TextColor="#FFFFFF" VerticalOptions="Center" />
+							</HorizontalStackLayout>
+						</Border>
+					</DataTemplate>
+				</CollectionView.ItemTemplate>
+			</CollectionView>
+
+		</VerticalStackLayout>
+	</ScrollView>
+ 
+</ContentPage>
