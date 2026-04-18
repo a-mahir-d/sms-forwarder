@@ -17,23 +17,24 @@ public partial class MainPage : ContentPage
 
     private async Task CheckPermissions()
     {
-        await CheckSmsPermission();
-        await CheckNotificationPermission();
+        var smsPermGranted = await CheckSmsPermission();
+        if(smsPermGranted) await CheckNotificationPermission();
     }
 
-    private async Task CheckSmsPermission()
+    private async Task<bool> CheckSmsPermission()
     {
         try
         {
             var status = await Permissions.RequestAsync<Permissions.Sms>();
-            if (status != PermissionStatus.Granted)
-            {
-                await DisplayAlertAsync("Hata", "SMS izni verilmedi, uygulama çalışmayacaktır.", "Tamam");
-            }
+            if (status == PermissionStatus.Granted) return true;
+            
+            await DisplayAlertAsync("Hata", "SMS izni verilmedi, uygulama çalışmayacaktır.", "Tamam");
+            return false;
+
         }
         catch
         {
-            // ignored
+            return false;
         }
     }
     
@@ -46,6 +47,7 @@ public partial class MainPage : ContentPage
             {
                 status = await Permissions.RequestAsync<Permissions.PostNotifications>();
             }
+            
             if (status == PermissionStatus.Granted)
             {
                 var activity = Platform.CurrentActivity as MainActivity;

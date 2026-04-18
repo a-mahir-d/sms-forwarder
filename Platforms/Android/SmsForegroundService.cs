@@ -13,41 +13,57 @@ public class SmsForegroundService : Service
     private const string ChannelId = "sms_forwarder_channel";
     private const int NotificationId = 1001;
     private SmsReceiver _receiver;
+    private bool _isServiceStarted = false;
 
     public override IBinder OnBind(Intent intent) => null;
 
     public override StartCommandResult OnStartCommand(Intent intent, StartCommandFlags flags, int startId)
     {
+        if (!_isServiceStarted)
+        {
 #pragma warning disable CA1416
-        CreateNotificationChannel();
+            CreateNotificationChannel();
 #pragma warning restore CA1416
-
-        var notificationCompatBuilder = new NotificationCompat.Builder(this, ChannelId);
-        notificationCompatBuilder.SetContentTitle("SMS Forwarder Aktif");
-        notificationCompatBuilder.SetContentText("Gelen mesajlar kontrol ediliyor...");
-        notificationCompatBuilder.SetSmallIcon(Resource.Drawable.sms);
-        notificationCompatBuilder.SetOngoing(true);
-        var notification = notificationCompatBuilder.Build();
+            
+            var notificationCompatBuilder = new NotificationCompat.Builder(this, ChannelId);
+            notificationCompatBuilder.SetContentTitle("SMS Forwarder Aktif");
+            notificationCompatBuilder.SetContentText("Gelen mesajlar kontrol ediliyor...");
+            notificationCompatBuilder.SetSmallIcon(Resource.Drawable.sms);
+            notificationCompatBuilder.SetOngoing(true);
+            notificationCompatBuilder.SetPriority(NotificationCompat.PriorityLow);
+            var notification = notificationCompatBuilder.Build();
+            
+            if (Build.VERSION.SdkInt >= BuildVersionCodes.UpsideDownCake)
+            {
+#pragma warning disable CA1416
+                if (notification != null) StartForeground(NotificationId, notification, ForegroundService.TypeSpecialUse);
+#pragma warning restore CA1416
+            }
+            else
+            {
+                StartForeground(NotificationId, notification);
+            }
+            
+            _receiver = new SmsReceiver();
+            var filter = new IntentFilter("android.provider.Telephony.SMS_RECEIVED") 
+            { 
+                Priority = (int)IntentFilterPriority.HighPriority 
+            };
+            
+            if (Build.VERSION.SdkInt >= BuildVersionCodes.O)
+            {
+#pragma warning disable CA1416
+                RegisterReceiver(_receiver, filter, ReceiverFlags.Exported);
+#pragma warning restore CA1416
+            }
+            else
+            {
+                RegisterReceiver(_receiver, filter);
+            }
+            
+            _isServiceStarted = true;
+        }
         
-        _receiver = new SmsReceiver();
-        var filter = new IntentFilter("android.provider.Telephony.SMS_RECEIVED") 
-        { 
-            Priority = (int)IntentFilterPriority.HighPriority 
-        };
-
-        if (Build.VERSION.SdkInt >= (BuildVersionCodes)34)
-        {
-#pragma warning disable CA1416
-            if (notification != null) StartForeground(NotificationId, notification, ForegroundService.TypeSpecialUse);
-            RegisterReceiver(_receiver, filter, ReceiverFlags.Exported);
-#pragma warning restore CA1416
-        }
-        else
-        {
-            StartForeground(NotificationId, notification);
-            RegisterReceiver(_receiver, filter);
-        }
-
         return StartCommandResult.Sticky;
     }
     

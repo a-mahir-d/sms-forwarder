@@ -8,7 +8,6 @@ public class AppSettings
     public static string ReceiverA => "+905*********";
     public static string ReceiverB => "+905*********";
     public static string ReceiverC => "+905*********";
-    public static string Owner => "*****";
     public string ActiveReceiver { get; set; } = "A";
     public List<string> SpecialSenders = ["*****"];
 
