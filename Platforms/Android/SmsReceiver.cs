@@ -79,9 +79,6 @@ public class SmsReceiver : BroadcastReceiver
             var finalMessage = $"Gönderen: {senderName}\n" +
                                $"Mesaj: {messageContent}";
             
-            System.Diagnostics.Debug.WriteLine($"[SMS_DEBUG] ALICI: {targetNumber}");
-            System.Diagnostics.Debug.WriteLine($"[SMS_DEBUG] İÇERİK: {finalMessage}");
-
             SmsManager smsManager;
             var context = Android.App.Application.Context;
             
